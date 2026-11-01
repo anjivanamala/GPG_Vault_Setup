@@ -1,0 +1,7 @@
+# Local decrypted secrets
+secrets.env
+runtime.env
+
+# Vault rotation backups and temporary files
+*.backup
+*.tmp
