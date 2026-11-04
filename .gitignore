@@ -1,7 +1,28 @@
-# Local decrypted secrets
-secrets.env
-runtime.env
+# Git ignore rules for encrypted config and local secrets
 
-# Vault rotation backups and temporary files
-*.backup
-*.tmp
+# Local decrypted configuration and temporary files
+**/*.properties
+**/*.json
+!**/*.example.properties
+!**/*.example.json
+!**/*.sample.properties
+!**/*.sample.json
+
+# GPG working directories and temporary material
+**/.gnupg/
+**/gnupg/
+**/*.gpg
+**/*.asc
+**/*.bak
+**/*.tmp
+**/*.temp
+**/*.log
+
+# Local environment files
+.env
+.env.*
+*.env
+
+# Operating-system noise
+.DS_Store
+Thumbs.db
