@@ -1,0 +1,537 @@
+Bro, since this is already implemented in your organisation, I would ask GitHub Copilot to act as a Senior Solution Architect and Technical Documentation Engineer, not simply as a README writer.
+
+The most important instruction is: Copilot must inspect the actual implementation and generate documentation from the source of truth, rather than inventing an idealised architecture.
+
+Here is a prompt you can paste directly into GitHub Copilot Chat (preferably Agent mode, with the complete implementation repository/workspace open).
+
+## GitHub Copilot master prompt
+
+# Role: Senior Solution Architect & Technical Documentation Engineer
+
+Act as a Senior Solution Architect with expertise in GitHub Actions, reusable workflows, HashiCorp Vault, OIDC authentication, Java/Maven automation frameworks, Selenium, Cucumber, and enterprise CI/CD architecture.
+
+## Objective
+
+Analyse the complete implementation in the current repository/workspace and prepare comprehensive, enterprise-grade technical documentation suitable for publishing as a **Confluence Wiki Page**.
+
+This documentation is for an already implemented Centralized Test Execution and Secure Test Data Management Platform.
+
+The documentation must accurately represent the existing implementation, including its actual workflow execution sequence, repository responsibilities, reusable workflows, Vault integration, secret manifest contract, data delivery mechanisms, and reporting.
+
+**Critical instruction:** Do not assume or invent implementation details. Inspect the source code, YAML workflows, scripts, configuration files, manifest files, and supporting documentation before writing. Where something cannot be verified, explicitly mark it as "To be confirmed" rather than presenting it as implemented.
+
+---
+
+## 1. Repository and Implementation Discovery
+
+Start by inspecting the complete repository structure.
+
+Identify and analyse:
+
+- Central orchestration workflows.
+- Application repository workflows.
+- Reusable GitHub Actions workflows.
+- Composite actions, if present.
+- HashiCorp Vault authentication and integration.
+- GitHub OIDC configuration.
+- Secret retrieval scripts.
+- Secret manifest YAML files.
+- Manifest validation logic.
+- ENV and FILE delivery implementations.
+- Maven execution commands and parameters.
+- Test report generation and publishing.
+- Cleanup and failure-handling mechanisms.
+- Repository-specific configuration.
+- Permissions, environments, and approval gates.
+
+Trace the actual execution flow from the initial workflow trigger until final test execution and reporting.
+
+Do not document files or capabilities that do not exist.
+
+## 2. Executive Summary
+
+Explain:
+
+- What problem the platform solves.
+- Why centralized test execution is required.
+- Why HashiCorp Vault is used for secure test data management.
+- How GitHub reusable workflows reduce duplication.
+- How the architecture supports multiple application repositories.
+- Key benefits for development, QA, DevOps, and leadership.
+
+Use business-oriented language without losing technical accuracy.
+
+## 3. High-Level Architecture
+
+Create a professional Mermaid architecture diagram showing the actual implementation.
+
+The diagram should represent the relevant components, such as:
+
+- Central Orchestrator Repository.
+- Application Repositories.
+- Application-specific Smoke/Regression Workflows.
+- Centralized Reusable Workflow.
+- Secret Manifest Contract.
+- GitHub OIDC Authentication.
+- HashiCorp Vault.
+- Secret Retrieval and Validation.
+- ENV/FILE Data Delivery.
+- Maven Test Execution.
+- Selenium/Cucumber Framework.
+- Test Reporting and Result Aggregation.
+
+Show the actual direction of execution and data flow.
+
+Also create a separate Mermaid sequence diagram showing the end-to-end execution lifecycle.
+
+Use meaningful component names, clear relationships, and readable diagrams suitable for Confluence.
+
+## 4. Component-Level Architecture
+
+Document each component separately.
+
+For every component, include:
+
+- Purpose.
+- Responsibilities.
+- Input.
+- Output.
+- Dependencies.
+- Interaction with other components.
+- Relevant source files and workflow references.
+
+Explain the separation of responsibilities between orchestration, application configuration, authentication, secret retrieval, data delivery, test execution, and reporting.
+
+## 5. End-to-End Execution Flow
+
+Document the complete execution sequence step by step.
+
+For example, investigate whether the implementation follows this flow:
+
+1. Central orchestrator receives a manual or automated trigger.
+2. Orchestrator dispatches test execution to application repositories.
+3. Application repository invokes the centralized reusable workflow.
+4. Reusable workflow checks out the correct caller repository and commit.
+5. Secret manifest is located and validated.
+6. GitHub OIDC is used to authenticate with HashiCorp Vault.
+7. Authorized test data is retrieved from Vault.
+8. Secret values are delivered according to the manifest.
+9. Maven test execution starts.
+10. Test reports are generated and published.
+11. Runtime secrets and temporary files are cleaned up.
+12. Orchestrator collects execution results and generates consolidated status.
+
+Replace this example with the actual observed implementation.
+
+Include a sequence diagram and detailed explanation of each stage.
+
+## 6. Secret Manifest – Configuration Contract
+
+This is a critical section.
+
+Treat the secret manifest as a formal configuration contract between application repositories and the centralized reusable workflow.
+
+Document the actual manifest schema.
+
+Explain every field, including fields such as:
+
+- schema_version
+- vault.path
+- secrets
+- key
+- type
+- delivery
+- delivery.mode
+- delivery.path
+- delivery.variable
+
+Only document fields that actually exist in the implementation.
+
+Provide a complete, realistic manifest example based on the repository's actual schema.
+
+Include a field reference table:
+
+| Field | Description | Required | Example |
+| ----- | ----------- | -------- | ------- |
+
+Explain:
+
+- Supported secret types.
+- ENV delivery.
+- FILE delivery.
+- How file destinations are resolved.
+- How the manifest maps Vault data to test framework inputs.
+- How new secrets are added.
+- How schema changes are managed.
+- Backward compatibility considerations.
+- Validation and failure scenarios.
+
+Clearly distinguish between configuration and authorization.
+
+Explain that the manifest declares which data the application needs; Vault policies and authentication establish what the application is actually permitted to access.
+
+## 7. HashiCorp Vault Integration
+
+Document the actual Vault integration.
+
+Include:
+
+- Vault KV engine/version, if identifiable.
+- Secret path conventions.
+- Repository-level secret isolation.
+- Environment-level isolation.
+- GitHub OIDC authentication.
+- Vault role and policy relationship.
+- Token lifecycle.
+- Secret retrieval mechanism.
+- Error handling.
+- Access-denied scenarios.
+
+Include actual code snippets from the implementation.
+
+If the architecture uses separate Vault paths for repositories or environments, explain why this is important for least-privilege access.
+
+Do not expose actual credentials, tokens, passwords, Vault secret values, or sensitive organisation-specific identifiers.
+
+Use sanitized examples wherever necessary.
+
+## 8. GitHub Actions Implementation
+
+Provide complete, readable code snippets for the important workflow components.
+
+Where implemented, include:
+
+- Central orchestrator workflow.
+- Application-level caller workflow.
+- Central reusable workflow.
+- OIDC permissions.
+- Workflow dispatch.
+- Repository checkout.
+- Manifest validation.
+- Vault authentication.
+- Secret retrieval.
+- Data delivery.
+- Maven execution.
+- Reporting.
+- Cleanup.
+
+For each snippet, explain:
+
+- What it does.
+- Why it is required.
+- Important inputs and outputs.
+- How it interacts with the next component.
+
+Use actual implementation code wherever possible. If a snippet is simplified for readability, clearly label it as illustrative.
+
+## 9. Data Delivery Architecture
+
+Document ENV and FILE delivery separately.
+
+For ENV delivery, explain:
+
+- How values become available to subsequent workflow steps.
+- How Java applications consume environment variables.
+- Limitations of environment variables.
+- Handling of multiline and structured data.
+
+For FILE delivery, explain:
+
+- Runtime file creation.
+- Directory creation.
+- File permissions.
+- JSON/Properties/YAML handling.
+- How existing test framework code consumes the files.
+- Cleanup after execution.
+
+Include Java code snippets only where relevant to the actual implementation.
+
+Highlight how this approach allows existing automation frameworks to consume Vault-managed test data with minimal framework modifications, if verified by the source code.
+
+## 10. Security Architecture
+
+Provide a dedicated security section covering the implemented controls.
+
+Investigate and document:
+
+- OIDC-based authentication.
+- Short-lived Vault tokens.
+- Least-privilege Vault policies.
+- Repository-level access boundaries.
+- QA/Preprod/Production separation.
+- GitHub Environment approvals.
+- Manifest path validation.
+- Protection against path traversal.
+- Secret masking and log exposure prevention.
+- Runtime file permissions.
+- Secret cleanup.
+- Workflow permissions.
+- Third-party action version pinning.
+
+Clearly classify each item as:
+
+- Implemented.
+- Partially implemented.
+- Recommended improvement.
+
+Never claim a security control exists unless it can be verified.
+
+## 11. Scalability and Parallel Execution
+
+Explain how the architecture supports multiple repositories and concurrent executions.
+
+Document actual:
+
+- Repository dispatch strategy.
+- Matrix execution, if present.
+- Job-level parallelism.
+- Maven parallel execution.
+- Fork/thread configuration.
+- Test data isolation.
+- Resource considerations.
+- Failure isolation.
+
+Include a Mermaid diagram if it helps explain parallel execution.
+
+## 12. Failure Handling and Observability
+
+Document how the system handles:
+
+- Invalid manifest.
+- Unsupported delivery type.
+- Missing Vault secret.
+- Vault authentication failure.
+- Vault authorization failure.
+- File creation failure.
+- Maven test failure.
+- Report publishing failure.
+- Cleanup failure.
+- Application repository dispatch failure.
+
+Explain how execution status is propagated to the orchestrator.
+
+Include relevant code snippets and troubleshooting guidance.
+
+## 13. Operational Runbook
+
+Create a practical guide for engineers and support teams.
+
+Include:
+
+- How to trigger a smoke execution.
+- How to trigger a regression execution.
+- How to select an environment.
+- How to add a new secret to the manifest.
+- How to onboard a new application repository.
+- How to troubleshoot Vault access.
+- How to troubleshoot manifest validation.
+- How to investigate test execution failures.
+- How to locate execution reports.
+- How to handle common failures.
+
+Use actual workflow names and repository paths discovered during inspection.
+
+## 14. Onboarding Guide
+
+Explain the exact steps required to onboard a new application repository.
+
+Include:
+
+- Repository prerequisites.
+- Required GitHub workflow.
+- Manifest creation.
+- Vault secret provisioning.
+- OIDC role/policy configuration.
+- Reusable workflow reference.
+- Permissions.
+- Initial smoke test.
+- Validation checklist.
+
+Clearly identify which activities are owned by the application team and which are owned by the platform/security team.
+
+## 15. Architecture Principles and Design Decisions
+
+Explain the architectural decisions behind the implementation.
+
+Where supported by the source code, discuss:
+
+- Single Responsibility Principle.
+- Open/Closed Principle.
+- Dependency Inversion.
+- Separation of concerns.
+- Configuration-driven execution.
+- Reusability.
+- Loose coupling.
+- Least privilege.
+- Centralized governance.
+- Extensibility.
+
+Do not force SOLID terminology onto GitHub Actions components where it does not meaningfully apply.
+
+Include a decision table:
+
+| Design Decision | Rationale | Benefit | Trade-off |
+| --------------- | --------- | ------- | --------- |
+
+## 16. Limitations and Future Enhancements
+
+Separate existing capabilities from potential future enhancements.
+
+Identify realistic opportunities involving:
+
+- Manifest schema versioning.
+- Automated contract validation.
+- Centralized execution dashboard.
+- Better execution analytics.
+- Vault secret rotation.
+- Dynamic test credentials.
+- Test data lifecycle management.
+- Retry and recovery mechanisms.
+- Parallel execution optimization.
+- Platform health monitoring.
+
+Do not describe proposed enhancements as current capabilities.
+
+## 17. Documentation Quality Requirements
+
+The final documentation must:
+
+- Be structured as a professional Confluence Wiki article.
+- Use clear H1/H2/H3 headings.
+- Include Mermaid architecture and sequence diagrams.
+- Include actual YAML, Bash, Java, JSON, and HCL snippets wherever applicable.
+- Include tables for configuration contracts and component responsibilities.
+- Explain the purpose of every important code snippet.
+- Use sanitized examples.
+- Avoid duplicate explanations.
+- Be understandable to both senior engineers and engineering leadership.
+- Maintain a clear distinction between implemented behaviour and recommendations.
+
+## 18. Deliverables
+
+Prepare the following documentation sections:
+
+1. Platform Overview.
+2. Architecture and Component Design.
+3. End-to-End Execution Flow.
+4. Secret Manifest Contract.
+5. Vault Integration and Security.
+6. GitHub Actions Implementation.
+7. Data Delivery and Framework Integration.
+8. Parallel Execution and Scalability.
+9. Reporting and Observability.
+10. Operational Runbook.
+11. Application Repository Onboarding.
+12. Design Decisions and Future Roadmap.
+
+Before generating the final documentation:
+
+1. Complete repository discovery.
+2. Trace the real execution path.
+3. Cross-check all code snippets against actual source files.
+4. Validate that Mermaid diagrams match the implementation.
+5. Identify missing information and assumptions.
+6. Check for accidental exposure of secrets or sensitive configuration.
+
+Finally, generate a complete `README.md` containing the documentation in Markdown format, suitable for version control and later migration into Confluence.
+
+Do not modify application source code, workflow behaviour, Vault configuration, or production settings. This is a documentation-only task.
+
+## How I'd execute this in Copilot
+
+Don't expect Copilot to produce a perfect 20-section architecture article in one shot. Use this sequence:
+
+1. Repository discovery
+
+   Ask Copilot to inspect all relevant repositories/files and produce an implementation inventory. Review whether it has identified the correct workflows, scripts and manifest.
+2. Architecture reconstruction
+
+   Ask it to trace the real workflow call chain and create the architecture and sequence diagrams. Correct any inaccurate arrows or missing components.
+3. Manifest contract
+
+   Ask it to document the actual YAML schema, field definitions, examples, validation rules and Vault mapping. This deserves its own review because it is the interface between application teams and the central platform.
+4. Code-level documentation
+
+   Ask it to generate snippets from actual source files, with file references and explanations. Do not accept invented or outdated snippets.
+5. Final documentation review
+
+   Ask it to verify every statement against source code, separate implemented controls from recommendations, and produce the final README.
+
+## Three additional prompts I strongly recommend
+
+1\. Architecture accuracy review
+
+```
+Act as an independent Principal Architect reviewing this documentation.
+
+Compare every architecture statement, Mermaid diagram, workflow
+sequence, and code snippet against the actual implementation.
+
+Identify:
+- Incorrect assumptions
+- Missing components
+- Incorrect execution dependencies
+- Security gaps
+- Differences between documented and actual behaviour
+
+Do not modify the implementation. Produce a documentation
+accuracy review with file references and suggested corrections.
+```
+
+2\. Secret Manifest contract review
+
+```
+Review the Secret Manifest as a versioned configuration API
+between application repositories and the centralized reusable
+workflow.
+
+Evaluate:
+- Schema consistency
+- Required and optional fields
+- Type validation
+- ENV/FILE delivery contracts
+- Path validation
+- Duplicate keys and destinations
+- Backward compatibility
+- Error messages
+- Extensibility
+
+Generate a field reference table and valid/invalid manifest
+examples based strictly on the implementation.
+```
+
+3\. Leadership-level architecture review
+
+```
+Review this platform as a Principal Architect presenting to
+an enterprise engineering leadership team.
+
+Evaluate:
+- Security
+- Scalability
+- Maintainability
+- Reusability
+- Reliability
+- Observability
+- Governance
+- Operational complexity
+- Business value
+
+Identify architectural risks and improvement opportunities.
+Clearly distinguish production capabilities from future proposals.
+```
+
+## My recommendation
+
+
+
+Recommended approach
+
+&#x20;Keep two documentation layers.
+
+
+
+| Document                         | Audience                       | Purpose                                                                                |
+| -------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------- |
+| Platform Architecture Wiki       | Architects, leadership, DevOps | Why the platform exists and how components interact                                    |
+| Engineering Implementation Guide | SDETs, developers, QA          | How to configure manifests, onboard repositories, troubleshoot and extend the platform |
