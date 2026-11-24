@@ -1,0 +1,319 @@
+# Role
+
+Act as a Senior SDET Architect, Senior Java Framework Engineer and Enterprise Software Design Engineer.
+
+# Context
+
+Our enterprise test automation framework uses:
+
+- Selenium 4
+- Java 21
+- Cucumber BDD
+- Maven
+- Selenium PageFactory and @FindBy annotations
+- Salesforce Lightning applications
+- Local browser and Sauce Labs execution
+- Parallel scenario execution
+- A centralized parent framework consumed by multiple child repositories
+- GitHub Actions CI/CD
+
+Following the Salesforce Winter '27 upgrade, we observed a browsing-context change involving the nine-dot App Launcher button. Salesforce components may move into or out of iframes between releases or environments, even when their element locators remain unchanged.
+
+We want to mitigate this category of failures across the entire framework rather than implementing application-specific fixes.
+
+# Objective
+
+Design and implement a centralized, reusable, backward-compatible, context-aware PageFactory mechanism that automatically resolves WebElements across different browsing contexts.
+
+The solution must not require LLMs, external AI services, Healenium or additional infrastructure.
+
+# Phase 1: Repository Discovery
+
+Before modifying any code, inspect the complete repository and identify:
+
+- Existing PageFactory initialization mechanisms.
+- Base Page classes and Page Object inheritance hierarchy.
+- Existing @FindBy, @FindBys and @FindAll usage.
+- WebElement and List<WebElement> declarations.
+- WebDriver lifecycle and thread management.
+- Existing element interaction utilities.
+- Explicit and implicit wait strategies.
+- Existing iframe switching utilities.
+- Cucumber hooks and dependency injection.
+- Parallel execution mechanisms.
+- Logging and reporting infrastructure.
+- Parent framework and child repository compatibility.
+
+Identify the most appropriate centralized extension point.
+
+Do not assume that a particular BasePage or utility class exists. Derive the implementation from the actual repository architecture.
+
+Present the proposed design, affected files, compatibility risks and implementation plan before making changes.
+
+Wait for my approval before proceeding with implementation.
+
+# Phase 2: Context-Aware Element Resolution
+
+Implement a reusable BrowsingContextResolver supporting:
+
+1. Current browsing context.
+2. Main document.
+3. Explicitly configured iframe.
+4. Dynamically discovered iframes.
+5. Nested iframes.
+6. Elements moving from an iframe to the main document.
+7. Elements moving from the main document into an iframe.
+8. Changes to iframe identifiers, names and indexes.
+9. Dynamically loaded or recreated iframes.
+
+Prefer the existing or explicitly configured context first.
+
+Perform automatic discovery only when the element cannot be resolved in its expected context.
+
+Support configurable maximum frame depth, eligible frame filters and bounded discovery time.
+
+Do not search indefinitely.
+
+# Phase 3: PageFactory Integration
+
+Evaluate Selenium extension points including:
+
+- ElementLocator
+- ElementLocatorFactory
+- FieldDecorator
+- Dynamic WebElement proxies
+
+Implement the most appropriate combination based on the existing architecture.
+
+Preserve existing Page Object declarations such as:
+
+```java
+@FindBy(css = "button[title='App Launcher']")
+private WebElement appLauncher;
+```
+
+Existing Page Objects and Cucumber step definitions should continue working without modification wherever technically feasible.
+
+Support existing locator annotation semantics and lazy element resolution.
+
+Ensure the correct browsing context is active when WebElement operations are invoked, not merely when the element is located.
+
+Handle operations including:
+
+- click()
+- sendKeys()
+- clear()
+- getText()
+- getAttribute()
+- getDomAttribute()
+- getDomProperty()
+- isDisplayed()
+- isEnabled()
+- isSelected()
+- findElement()
+- findElements()
+
+Evaluate compatibility with Actions, JavascriptExecutor, ExpectedConditions, Select, screenshots and WebElement unwrapping.
+
+Document any operations requiring explicit context-aware wrappers.
+
+Preserve List<WebElement> semantics. Do not silently aggregate unrelated matches across frames.
+
+# Phase 4: Context Management
+
+Design a safe browsing-context lifecycle.
+
+- Preserve intentional frame switching performed by existing tests.
+- Do not unconditionally switch to defaultContent() for every interaction.
+- Keep the resolved context active for the required operation.
+- Define explicit context restoration policies.
+- Restore the appropriate context after failures.
+- Support nested interactions and explicit frame workflows.
+- Never automatically switch browser windows or tabs.
+- Do not break CTI integrations that depend on specific iframe contexts.
+
+Handle context resolution and element interaction as a coordinated operation.
+
+# Phase 5: Performance and Caching
+
+Our tests execute extensively on Sauce Labs, so minimize remote WebDriver calls.
+
+Implement:
+
+- Expected-context-first resolution.
+- Session-scoped frame-path caching.
+- Cache invalidation following navigation or context changes.
+- Recovery when cached frame paths become stale.
+- Configurable discovery depth and timeout.
+- Bounded polling and retry mechanisms.
+- Lazy resolution.
+
+Never cache WebElement instances as part of the frame-path cache.
+
+Do not introduce unbounded recursive searches or multiply existing wait timeouts.
+
+Ensure compatibility with the framework's existing implicit and explicit wait configuration.
+
+Do not change global WebDriver wait settings without evaluating the impact.
+
+# Phase 6: Thread Safety
+
+The framework supports parallel Cucumber execution.
+
+Ensure:
+
+- Driver-session isolation.
+- Scenario-safe context management.
+- No shared mutable WebDriver instances.
+- No cross-session frame cache contamination.
+- Compatibility with existing dependency injection and driver lifecycle.
+- Proper cache cleanup when browser sessions terminate.
+
+Avoid introducing unnecessary ThreadLocal state if the existing dependency injection architecture already provides scenario isolation.
+
+# Phase 7: Failure Handling
+
+Handle relevant Selenium exceptions, including:
+
+- NoSuchElementException
+- NoSuchFrameException
+- StaleElementReferenceException
+- TimeoutException
+
+Distinguish browsing-context failures from locator failures, interaction failures and application defects.
+
+Do not suppress legitimate application failures.
+
+If multiple plausible elements are discovered across eligible contexts, fail with meaningful ambiguity diagnostics rather than clicking an arbitrary element.
+
+Do not blindly retry non-idempotent actions such as click() or sendKeys() when the previous operation may already have succeeded.
+
+Preserve the original exception and include resolution diagnostics.
+
+# Phase 8: Configuration
+
+Provide centralized configuration supporting the following strategies:
+
+- LEGACY
+- CURRENT_CONTEXT
+- MAIN_DOCUMENT
+- SPECIFIC_FRAME
+- AUTO_DISCOVER
+
+Support a framework-wide default strategy and optional Page Object or element-level overrides.
+
+Provide configuration for:
+
+- Feature enablement.
+- Maximum frame depth.
+- Discovery timeout.
+- Cache enablement.
+- Context restoration policy.
+- Eligible and excluded frames.
+- Diagnostic logging.
+- Strict ambiguity handling.
+
+Maintain backward compatibility.
+
+Allow immediate rollback to legacy PageFactory behavior through configuration without requiring code changes.
+
+Do not require mandatory modifications to existing @FindBy annotations.
+
+# Phase 9: Observability
+
+Integrate with the existing logging and reporting infrastructure.
+
+Capture structured browsing-context recovery events containing:
+
+- Page Object class.
+- Element field name.
+- Locator information, with sensitive values redacted.
+- Expected browsing context.
+- Resolved browsing context.
+- Frame discovery depth.
+- Cache hit or miss.
+- Resolution duration.
+- Recovery outcome.
+- Failure reason.
+
+Differentiate normal element resolution from actual context recovery.
+
+Do not log credentials, tokens, customer data or sensitive Salesforce information.
+
+Make recovery metrics available for future integration with our consolidated GitHub Actions dashboard.
+
+# Phase 10: Testing
+
+Create deterministic local HTML test fixtures and automated tests covering:
+
+- Element in the main document.
+- Element inside an iframe.
+- Element inside nested iframes.
+- Element moving into an iframe.
+- Element moving out of an iframe.
+- Dynamically recreated iframe.
+- Changed iframe identifiers and indexes.
+- Stale cached frame paths.
+- Multiple matching elements across frames.
+- Hidden and disabled elements.
+- Missing elements.
+- Cross-origin iframe handling.
+- Explicit frame-switching workflows.
+- WebElement lists.
+- Existing PageFactory annotations.
+- Explicit wait compatibility.
+- Parallel WebDriver sessions.
+- Context restoration after exceptions.
+- Legacy mode compatibility.
+- Discovery timeout enforcement.
+
+Add performance tests measuring additional WebDriver calls during normal resolution and recovery.
+
+Use existing test libraries and framework conventions wherever possible.
+
+Do not depend exclusively on a live Salesforce environment for testing.
+
+# Design Principles
+
+Follow:
+
+- SOLID principles.
+- DRY.
+- Separation of concerns.
+- Open/Closed Principle.
+- Dependency Inversion.
+- Composition over inheritance where appropriate.
+- Fail-fast behavior for ambiguous matches.
+- Backward compatibility.
+- Minimal performance overhead.
+
+Avoid unnecessary abstractions, overengineering and application-specific hardcoding.
+
+# Constraints
+
+- Do not modify Gherkin scenarios.
+- Do not rewrite existing Page Objects unnecessarily.
+- Do not introduce new external dependencies without approval.
+- Do not change existing locator definitions unless explicitly approved.
+- Do not implement AI-based locator healing as part of this task.
+- Do not introduce application-specific Salesforce selectors into the core resolver.
+- Do not silently ignore exceptions.
+- Do not automatically commit or push changes.
+
+# Deliverables
+
+1. Existing architecture assessment.
+2. Proposed architecture and design decisions.
+3. Implementation plan.
+4. Context-aware PageFactory implementation.
+5. BrowsingContextResolver implementation.
+6. Configuration and feature-toggle mechanism.
+7. Thread-safe context cache.
+8. Automated tests and HTML fixtures.
+9. Performance assessment.
+10. README documentation.
+11. Child repository adoption guide.
+12. Known limitations and compatibility matrix.
+13. Rollback strategy.
+
+Start with repository discovery and architecture assessment. Do not implement anything until I approve the proposed design.
